@@ -1,0 +1,1 @@
+web: gunicorn -w 1 -t 180 --max-requests 10 --max-requests-jitter 5 -b 0.0.0.0:$PORT app:app
