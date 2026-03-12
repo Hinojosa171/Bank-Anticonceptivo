@@ -1,24 +1,28 @@
 import os
 import json
-from flask import Request, Response
 
-CLASES = {
-    0: "No utilizó ningún método anticonceptivo",
-    1: "Sí utilizó un método anticonceptivo a corto plazo",
-    2: "Sí utilizó un método anticonceptivo a largo plazo",
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Max-Age": "3600"
 }
 
-def handler(request: Request):
+def handler(request):
     """Root endpoint for health checks"""
+    
+    if request.method == "OPTIONS":
+        return ("", 204, CORS_HEADERS)
+    
     response_data = {
         "mensaje": "API Anticonceptivos funcionando en Vercel",
         "estado": "activo",
         "version": "1.0",
         "endpoints": ["/api/ping", "/api/predict"]
     }
-    return Response(
+    
+    return (
         json.dumps(response_data),
-        status=200,
-        mimetype='application/json',
-        headers={"Access-Control-Allow-Origin": "*"}
+        200,
+        {**CORS_HEADERS, "Content-Type": "application/json"}
     )

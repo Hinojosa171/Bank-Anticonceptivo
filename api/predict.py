@@ -1,27 +1,28 @@
 import json
 import numpy as np
-from flask import Request, Response
+from flask import Request
 from api.model_loader import get_model, get_scaler, CLASES
 
 def handler(request: Request):
-    """Serverless predict endpoint"""
+    """Serverless predict endpoint with proper CORS"""
+    
+    # CORS Headers to include in all responses
+    cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS, GET",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Max-Age": "3600"
+    }
     
     # Handle CORS preflight
     if request.method == "OPTIONS":
-        return Response(
-            status=200,
-            headers={
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type"
-            }
-        )
+        return ("", 204, cors_headers)
     
     if request.method != "POST":
-        return Response(
+        return (
             json.dumps({"error": "Use POST method"}),
-            status=405,
-            mimetype='application/json'
+            405,
+            {**cors_headers, "Content-Type": "application/json"}
         )
 
     # Load model and scaler
@@ -29,10 +30,10 @@ def handler(request: Request):
     scaler = get_scaler()
     
     if model is None or scaler is None:
-        return Response(
+        return (
             json.dumps({"error": "Modelo o scaler no disponible"}),
-            status=503,
-            mimetype='application/json'
+            503,
+            {**cors_headers, "Content-Type": "application/json"}
         )
 
     # Parse JSON
@@ -41,10 +42,10 @@ def handler(request: Request):
         print("📨 Datos recibidos:", datos)
     except Exception as e:
         print(f"❌ Error al parsear JSON: {str(e)}")
-        return Response(
+        return (
             json.dumps({"error": "JSON inválido"}),
-            status=400,
-            mimetype='application/json'
+            400,
+            {**cors_headers, "Content-Type": "application/json"}
         )
 
     # Required fields
@@ -57,10 +58,10 @@ def handler(request: Request):
     # Validate fields exist
     for campo in campos:
         if campo not in datos:
-            return Response(
+            return (
                 json.dumps({"error": f"Falta el campo: {campo}"}),
-                status=400,
-                mimetype='application/json'
+                400,
+                {**cors_headers, "Content-Type": "application/json"}
             )
 
     # Convert to float
@@ -78,10 +79,10 @@ def handler(request: Request):
         ]])
         print("✅ Array de entrada creado")
     except (ValueError, TypeError) as e:
-        return Response(
+        return (
             json.dumps({"error": f"Valor inválido: {str(e)}"}),
-            status=400,
-            mimetype='application/json'
+            400,
+            {**cors_headers, "Content-Type": "application/json"}
         )
 
     # Scale
@@ -89,10 +90,10 @@ def handler(request: Request):
         entrada_escalada = scaler.transform(entrada)
         print("✅ Entrada escalada")
     except Exception as e:
-        return Response(
+        return (
             json.dumps({"error": f"Error al escalar: {str(e)}"}),
-            status=500,
-            mimetype='application/json'
+            500,
+            {**cors_headers, "Content-Type": "application/json"}
         )
 
     # Predict
@@ -100,10 +101,10 @@ def handler(request: Request):
         prediccion = model.predict(entrada_escalada, verbose=0)
         print("✅ Predicción realizada")
     except Exception as e:
-        return Response(
+        return (
             json.dumps({"error": f"Error en predicción: {str(e)}"}),
-            status=500,
-            mimetype='application/json'
+            500,
+            {**cors_headers, "Content-Type": "application/json"}
         )
 
     # Get class and probabilities
@@ -119,9 +120,8 @@ def handler(request: Request):
         "probabilidades": probabilidades
     }
     
-    return Response(
+    return (
         json.dumps(respuesta),
-        status=200,
-        mimetype='application/json',
-        headers={"Access-Control-Allow-Origin": "*"}
+        200,
+        {**cors_headers, "Content-Type": "application/json"}
     )
