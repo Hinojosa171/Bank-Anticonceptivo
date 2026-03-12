@@ -1,13 +1,5 @@
 {
   "buildCommand": "pip install -r requirements.txt",
-  "devCommand": "python -m http.server 3000",
-  "outputDirectory": ".",
-  "functions": {
-    "api/*.py": {
-      "memory": 1024,
-      "maxDuration": 60
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
