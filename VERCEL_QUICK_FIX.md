@@ -1,46 +1,33 @@
-# 🚀 INSTRUCCIONES FINALES PARA DESPLEGAR EN VERCEL
+# 🚀 INSTRUCCIONES FINALES PARA DESPLEGAR EN VERCEL - ✅ CORREGIDO
 
-## ⚠️ EL PROBLEMA
+## ⚠️ EL PROBLEMA FINAL
 
-Tu repo tiene esta estructura:
-```
-ROOT/
-├── backend2/          ← AQUÍ ESTÁ TU APP
-│   ├── api/
-│   ├── requirements.txt
-│   └── vercel.json
-└── Front-Anticonceptivo-Check/
-    └── index.html
-```
+Vercel buscaba un entrypoint de Flask (`app` object), pero la estructura no era correcta.
 
-Vercel busca `api/` en la **RAÍZ**, pero la tuya está en `backend2/`.
+**YA ESTÁ SOLUCIONADO** - He creado un `app.py` compatible con Vercel que actúa como wrapper.
 
 ---
 
-## ✅ SOLUCIÓN - SIGUE ESTOS PASOS EXACTOS
+## ✅ SOLUCIÓN - PASOS EXACTOS (REVISADO)
 
 ### **PASO 1: En Vercel Dashboard**
 
 1. Ve a https://vercel.com/dashboard
-2. Haz click en **"New Project"**
+2. Haz click en **"New Project"** (o reimporta si el anterior falló)
 3. Selecciona **"Import Git Repository"**
 4. Pega: `https://github.com/Hinojosa171/Bank-Anticonceptivo`
 
 ### **PASO 2: IMPORTANTE - Configura Correctamente**
 
-Aquí es donde **falla la mayoría de gente**. Debes cambiar:
+**Root Directory**: `./backend2`
 
-```
-Root Directory: ./backend2
-```
+Esto le dice a Vercel: "Los archivos están en la carpeta backend2"
 
-Así le dices a Vercel: "Busca los archivos Python dentro de la carpeta backend2"
+### **PASO 3: Framework Detection**
 
-### **PASO 3: Los demás campos**
-
-- **Framework Preset**: "Other" (no Flask)
-- **Build Command**: Debe estar auto-filled como `pip install -r requirements.txt`
-- NO TOQUES NADA MÁS
+- **Framework Preset**: Vercel debería detectar "Flask" automáticamente
+- Si no, selecciona "Flask" manualmente
+- **Build Command**: Debe ser `pip install -r requirements.txt`
 
 ### **PASO 4: Deploy**
 
@@ -51,25 +38,24 @@ Así le dices a Vercel: "Busca los archivos Python dentro de la carpeta backend2
 
 ## ✨ DESPUÉS DEL DEPLOY
 
-Cuando termine, Vercel te dará una URL como:
+Vercel te dará una URL:
 ```
-https://bank-anticonceptivo-backend-abc123.vercel.app
-```
-
-### **Testa que funciona:**
-
-```bash
-# En tu navegador o terminal (curl)
-curl https://bank-anticonceptivo-backend-abc123.vercel.app/api/
-# Debe devolver JSON, no 404
+https://bank-anticonceptivo-backend-xyz.vercel.app
 ```
 
-### **Actualiza tu Frontend:**
+### **Test que funciona:**
 
-En `Front-Anticonceptivo-Check/index.html` (línea ~340):
+En navegador (debería devolver JSON):
+```
+https://tu-url.vercel.app/api/
+```
+
+### **Actualiza Frontend:**
+
+`Front-Anticonceptivo-Check/index.html` (línea ~340):
 
 ```javascript
-const BACKEND_URL = "https://bank-anticonceptivo-backend-abc123.vercel.app/api/predict";
+const BACKEND_URL = "https://tu-url.vercel.app/api/predict";
 ```
 
 Luego:
@@ -84,18 +70,35 @@ git push origin main
 
 ## 📋 CHECKLIST FINAL
 
-- [ ] Root Directory set to `./backend2` en Vercel
-- [ ] Framework: "Other"
+- [ ] Root Directory = `./backend2`
+- [ ] Framework = "Flask" (auto-detected)
 - [ ] Clicked Deploy
 - [ ] Esperé 2-3 minutos
-- [ ] Testé `/api/` endpoint en navegador
-- [ ] Actualicé frontend con nueva URL
-- [ ] Committé y pushié cambios
+- [ ] Testé `/api/` en navegador (debería return JSON)
+- [ ] Actualicé frontend URL
+- [ ] Pushié cambios frontend
+
+---
+
+## ✨ CAMBIOS QUE HICE
+
+| Archivo | Cambio |
+|---------|--------|
+| `app.py` | ✅ Reescrito como Flask wrapper compatible con Vercel |
+| `vercel.json` | ✅ Simplificado (solo buildCommand) |
+| `.vercelignore` | ✅ Actualizado |
+
+Ahora Vercel encontrará el `app` object automaticamente.
 
 ---
 
 ## 🎯 LISTO!
 
-Eso es todo. La clave es **Root Directory = `./backend2`**
+Todo está configurado. Solo necesitas:
+1. Importar repo en Vercel
+2. Set `Root Directory = ./backend2`
+3. Click Deploy
+4. Esperar
+5. Update frontend URL
+6. Done! 🚀
 
-Good luck! 🚀
