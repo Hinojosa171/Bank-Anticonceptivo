@@ -1,14 +1,11 @@
-import json
-
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Max-Age": "3600"
 }
 
 def handler(request):
-    """Ping endpoint para verificar que la API está viva"""
+    """Ping endpoint - simple health check"""
     
     if request.method == "OPTIONS":
         return ("", 204, CORS_HEADERS)

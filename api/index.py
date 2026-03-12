@@ -1,24 +1,26 @@
-import os
 import json
 
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Max-Age": "3600"
+    "Access-Control-Allow-Headers": "Content-Type",
 }
 
 def handler(request):
-    """Root endpoint for health checks"""
+    """Root health check endpoint"""
     
     if request.method == "OPTIONS":
         return ("", 204, CORS_HEADERS)
     
     response_data = {
-        "mensaje": "API Anticonceptivos funcionando en Vercel",
+        "mensaje": "✅ API Anticonceptivos en Vercel funcionando",
         "estado": "activo",
         "version": "1.0",
-        "endpoints": ["/api/ping", "/api/predict"]
+        "endpoints": {
+            "health": "/api/",
+            "ping": "/api/ping",
+            "predict": "/api/predict"
+        }
     }
     
     return (
